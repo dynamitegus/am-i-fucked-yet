@@ -1,13 +1,13 @@
 'use client'
 import * as React from 'react';
 import {useState, useEffect, useMemo, useCallback} from 'react';
-import {createRoot, type Container} from 'react-dom/client';
+import {createRoot} from 'react-dom/client';
 import {Map, Source, Layer} from 'react-map-gl/maplibre';
 import ControlPanel from './control-panel';
+import type { JSONArray } from 'node_modules/superjson/dist/types';
 
 import {dataLayer} from './map-style';
 import {updatePercentiles} from './utils';
-import type { JSONArray } from 'node_modules/superjson/dist/types';
 
 export default function App() {
   const [year, setYear] = useState(2015);
@@ -20,8 +20,8 @@ export default function App() {
       'https://raw.githubusercontent.com/uber/react-map-gl/master/examples/.data/us-income.geojson'
     )
       .then(resp => resp.json())
-      .then(json => setAllData(json))// eslint-disable-line
-      .catch(err => console.error('Could not load data', err)); 
+      .then(json => setAllData(json))
+      .catch(err => console.error('Could not load data', err));
   }, []);
 
   const onHover = useCallback((event: { features: JSONArray; point: { x: number; y: number; }; }) => {
@@ -29,7 +29,7 @@ export default function App() {
       features,
       point: {x, y}
     } = event;
-    const hoveredFeature = features?.[0];;// eslint-disable-line
+    const hoveredFeature = features?.[0];
 
     // prettier-ignore
     setHoverInfo(hoveredFeature && {feature: hoveredFeature, x, y});
@@ -40,14 +40,14 @@ export default function App() {
   }, [allData, year]);
 
   return (
-    <div>
+    <>
       <Map
         initialViewState={{
           latitude: 40,
           longitude: -100,
           zoom: 3
         }}
-        mapStyle="https://tiles.versatiles.org/assets/styles/colorful/style.json"
+        mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
         interactiveLayerIds={['data']}
         onMouseMove={onHover}
       >
@@ -63,11 +63,11 @@ export default function App() {
         )}
       </Map>
 
-      <ControlPanel year={year} onChange={(value: React.SetStateAction<number>) => setYear(value)} />
-    </div>
+      <ControlPanel year={year} onChange={value => setYear(value)} />
+    </>
   );
 }
 
-export function renderToDom(container: Container) {
+export function renderToDom(container) {
   createRoot(container).render(<App />);
 }
