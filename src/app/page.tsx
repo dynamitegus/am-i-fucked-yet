@@ -7,7 +7,7 @@ import ControlPanel from './control-panel';
 
 import {dataLayer} from './map-style';
 import {updatePercentiles} from './utils';
-import type { JSONArray } from 'node_modules/superjson/dist/types';
+import type { JSONArray, JSONObject, JSONValue } from 'node_modules/superjson/dist/types';
 
 export default function App() {
   const [year, setYear] = useState(2015);
@@ -29,7 +29,7 @@ export default function App() {
       features,
       point: {x, y}
     } = event;
-    const hoveredFeature = features?.[0];;// eslint-disable-line
+    const hoveredFeature: JSONValue = features?.[0];
 
     // prettier-ignore
     setHoverInfo(hoveredFeature && {feature: hoveredFeature, x, y});
