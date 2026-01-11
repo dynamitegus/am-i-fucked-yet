@@ -23,6 +23,7 @@ export default function App() {
         latitude: -37.8409,
         zoom: 6
       }}
+      interactiveLayerIds={['data']}
       style={{width: 1200, height: 500}}
       mapStyle="https://tiles.versatiles.org/assets/styles/colorful/style.json"
       
