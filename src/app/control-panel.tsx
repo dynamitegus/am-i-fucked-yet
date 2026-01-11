@@ -1,73 +1,41 @@
-'use client'
 import * as React from 'react';
-import {useState, useEffect, useMemo, useCallback} from 'react';
-import {createRoot} from 'react-dom/client';
-import {Map, Source, Layer} from 'react-map-gl/maplibre';
-import ControlPanel from './control-panel';
-import type { JSONArray } from 'node_modules/superjson/dist/types';
 
-import {dataLayer} from './map-style';
-import {updatePercentiles} from './utils';
-
-export default function App() {
-  const [year, setYear] = useState(2015);
-  const [allData, setAllData] = useState(null);
-  const [hoverInfo, setHoverInfo] = useState(null);
-
-  useEffect(() => {
-    /* global fetch */
-    fetch(
-      'https://raw.githubusercontent.com/uber/react-map-gl/master/examples/.data/us-income.geojson'
-    )
-      .then(resp => resp.json())
-      .then(json => setAllData(json))
-      .catch(err => console.error('Could not load data', err));
-  }, []);
-
-  const onHover = useCallback((event: { features: JSONArray; point: { x: number; y: number; }; }) => {
-    const {
-      features,
-      point: {x, y}
-    } = event;
-    const hoveredFeature = features?.[0];
-
-    // prettier-ignore
-    setHoverInfo(hoveredFeature && {feature: hoveredFeature, x, y});
-  }, []);
-
-  const data = useMemo(() => {
-    return allData && updatePercentiles(allData, f => f.properties.income[year]);
-  }, [allData, year]);
+function ControlPanel(props) {
+  const {year} = props;
 
   return (
-    <>
-      <Map
-        initialViewState={{
-          latitude: 40,
-          longitude: -100,
-          zoom: 3
-        }}
-        mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
-        interactiveLayerIds={['data']}
-        onMouseMove={onHover}
-      >
-        <Source type="geojson" data={data}>
-          <Layer {...dataLayer} />
-        </Source>
-        {hoverInfo && (
-          <div className="tooltip" style={{left: hoverInfo.x, top: hoverInfo.y}}>
-            <div>State: {hoverInfo.feature.properties.name}</div>
-            <div>Median Household Income: {hoverInfo.feature.properties.value}</div>
-            <div>Percentile: {(hoverInfo.feature.properties.percentile / 8) * 100}</div>
-          </div>
-        )}
-      </Map>
+    <div className="control-panel">
+      <h3>Interactive GeoJSON</h3>
+      <p>
+        Map showing median household income by state in year <b>{year}</b>. Hover over a state to
+        see details.
+      </p>
+      <p>
+        Data source: <a href="www.census.gov">US Census Bureau</a>
+      </p>
+      <div className="source-link">
+        <a
+          href="https://github.com/visgl/react-map-gl/tree/8.1-release/examples/maplibre/geojson"
+          target="_new"
+        >
+          View Code ↗
+        </a>
+      </div>
+      <hr />
 
-      <ControlPanel year={year} onChange={value => setYear(value)} />
-    </>
+      <div key={'year'} className="input">
+        <label>Year</label>
+        <input
+          type="range"
+          value={year}
+          min={1995}
+          max={2015}
+          step={1}
+          onChange={evt => props.onChange(evt.target.value)}
+        />
+      </div>
+    </div>
   );
 }
 
-export function renderToDom(container) {
-  createRoot(container).render(<App />);
-}
+export default React.memo(ControlPanel);
