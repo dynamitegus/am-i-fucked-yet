@@ -1,34 +1,68 @@
 import type { LayerProps } from "react-map-gl/maplibre";
 
 // For more information on data-driven styles, see https://maplibre.org/maplibre-style-spec/expressions/
-export function warnings(status: string, statewide: string): LayerProps {
-  let colour = "#00ff00";
-  if (status == "Extreme") {
-    colour = "#ff0000";
-  } else if (status == "Moderate") {
-    colour = "#fc6f03";
-  } else if (status == "Minor")  {
-    colour = "#fcad03"
-  } else if (status == "Unknown") {
-    colour = "#03fcc2"
-  }
-
-const warning: LayerProps = {
-  id: "extreme",
-  type: "fill",
-  filter: [
-    "all",
-    [
-      "case",
+export function warnings(
+  status: string,
+  statewide: string,
+  colour: string,
+  opacity = 0.3,
+): LayerProps {
+  const warning: LayerProps = {
+    id: status + statewide,
+    type: "fill",
+    filter: [
+      "all",
       ["==", ["get", "status"], status],
-      ["!=", ["get", "statewide"], statewide],
-      false,
+      ["==", ["get", "statewide"], statewide],
     ],
-  ],
+    paint: {
+      "fill-opacity": opacity,
+      "fill-color": colour,
+    },
+  };
+  return warning;
+}
+
+export const clusterLayer: LayerProps = {
+  id: "clusters",
+  type: "circle",
+  filter: ["has", "point_count"],
   paint: {
-    "fill-opacity": 0.3,
-    "fill-color": colour,
+    "circle-color": [
+      "step",
+      ["get", "point_count"],
+      "#51bbd6",
+      100,
+      "#f1f075",
+      750,
+      "#f28cb1",
+    ],
+    "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
   },
 };
-return(warning);
+
+export const clusterCountLayer: LayerProps = {
+  id: "cluster-count",
+  type: "symbol",
+  filter: ["has", "point_count"],
+  layout: {
+    "text-field": "{point_count_abbreviated}",
+    "text-size": 12,
+  },
+};
+
+export const unclusteredPointLayer: LayerProps = {
+  id: "unclustered-point",
+  type: "circle",
+  filter: [
+      "all",
+      ["==", ["get", "type"], "Point"],
+      ["!", ["has", "point_count"]],
+  ],
+  paint: {
+    "circle-color": "#11b4da",
+    "circle-radius": 4,
+    "circle-stroke-width": 1,
+    "circle-stroke-color": "#fff",
+  },
 };
