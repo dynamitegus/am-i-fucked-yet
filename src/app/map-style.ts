@@ -1,71 +1,34 @@
 import type { LayerProps } from "react-map-gl/maplibre";
 
 // For more information on data-driven styles, see https://maplibre.org/maplibre-style-spec/expressions/
-export const unknown: LayerProps = {
-  id: "unknown",
-  type: "fill",
-  filter: [
-    "all",
-    [
-      "case",
-      ["==", ["get", "status"], "Unknown"],
-      ["!=", ["get", "statewide"], "Y"],
-      false
-    ],
-  ],
-  paint: {
-    "fill-opacity": 0.3,
-    "fill-color": "rgba(0, 255, 0, 1)",
-  },
-};
-export const minor: LayerProps = {
-  id: "minor",
-  type: "fill",
-  filter: [
-    "all",
-    [
-      "case",
-      ["==", ["get", "status"], "Minor"],
-      ["!=", ["get", "statewide"], "Y"],
-      false,
-    ],
-  ],
-  paint: {
-    "fill-opacity": 0.3,
-    "fill-color": "rgba(0, 0, 255, 1)",
-  },
-};
-export const moderate: LayerProps = {
-  id: "moderate",
-  type: "fill",
-  filter: [
-    "all",
-    [
-      "case",
-      ["==", ["get", "status"], "Moderate"],
-      ["!=", ["get", "statewide"], "Y"],
-      false,
-    ],
-  ],
-  paint: {
-    "fill-opacity": 0.3,
-    "fill-color": "#fc6f03",
-  },
-};
-export const extreme: LayerProps = {
+export function warnings(status: string, statewide: string): LayerProps {
+  let colour = "#00ff00";
+  if (status == "Extreme") {
+    colour = "#ff0000";
+  } else if (status == "Moderate") {
+    colour = "#fc6f03";
+  } else if (status == "Minor")  {
+    colour = "#fcad03"
+  } else if (status == "Unknown") {
+    colour = "#03fcc2"
+  }
+
+const warning: LayerProps = {
   id: "extreme",
   type: "fill",
   filter: [
     "all",
     [
       "case",
-      ["==", ["get", "status"], "Extreme"],
-      ["!=", ["get", "statewide"], "Y"],
+      ["==", ["get", "status"], status],
+      ["!=", ["get", "statewide"], statewide],
       false,
     ],
   ],
   paint: {
     "fill-opacity": 0.3,
-    "fill-color": "rgba(255, 0, 0, 1)",
+    "fill-color": colour,
   },
+};
+return(warning);
 };

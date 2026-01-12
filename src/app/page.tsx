@@ -28,10 +28,10 @@ export default function App() {
       mapStyle="https://tiles.versatiles.org/assets/styles/colorful/style.json"
     >
       <Source type="geojson" data={allData}>
-        <Layer {...dataLayer.minor} />
-        <Layer {...dataLayer.moderate} />
-        <Layer {...dataLayer.extreme} />
-        <Layer {...dataLayer.unknown} />
+        <Layer {...dataLayer.warnings("Minor", "N")} />
+        <Layer {...dataLayer.warnings("Moderate", "N")} />
+        <Layer {...dataLayer.warnings("Extreme", "N")} />
+        <Layer {...dataLayer.warnings("Unknown", "N")} />
       </Source>
     </Map>
   );
