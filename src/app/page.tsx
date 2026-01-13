@@ -11,11 +11,11 @@ import {
   Source,
   Layer,
 } from "react-map-gl/maplibre";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import "maplibre-gl/dist/maplibre-gl.css";
 import * as VICEMERGENCYDATA from "../../public/geojson.json";
 import * as dataLayer from "./map-style";
-import Pin from "./pin";
+import type {MapRef, MapMouseEvent} from 'react-map-gl/maplibre';
 
 export default function App() {
   const [allData, setAllData] = useState(null);
@@ -27,7 +27,6 @@ export default function App() {
       .then((json) => setAllData(json))
       .catch((err) => console.error("Could not load data", err)); // eslint-disable-line
   }, []);
-
   return (
     <Map
       initialViewState={{
@@ -36,7 +35,7 @@ export default function App() {
         zoom: 6,
       }}
       interactiveLayerIds={["data"]}
-      style={{ width: '100vw', height: '100vh' }}
+      style={{ width: "100vw", height: "100vh" }}
       mapStyle="https://tiles.versatiles.org/assets/styles/colorful/style.json"
     >
       <GeolocateControl position="top-left" />
@@ -44,10 +43,11 @@ export default function App() {
       <NavigationControl position="top-left" />
       <ScaleControl />
 
-      <Source type="geojson" data={allData}>
-        <Layer {...dataLayer.clusterLayer} />
-        <Layer {...dataLayer.clusterCountLayer} />
-        <Layer {...dataLayer.unclusteredPointLayer} />
+      <Source
+        type="geojson"
+        data={allData}
+      >
+        <Layer {...dataLayer.incidents} />
         <Layer {...dataLayer.warnings("Minor", "N", "#fcad03")} />
         <Layer {...dataLayer.warnings("Moderate", "N", "#fc6f03")} />
         <Layer {...dataLayer.warnings("Extreme", "N", "#ff0000")} />
