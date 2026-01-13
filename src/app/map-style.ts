@@ -55,9 +55,8 @@ export const unclusteredPointLayer: LayerProps = {
   id: "unclustered-point",
   type: "circle",
   filter: [
-      "all",
-      ["==", ["get", "type"], "Point"],
-      ["!", ["has", "point_count"]],
+        "any",
+        ['==', '$type', 'Point'],
   ],
   paint: {
     "circle-color": "#11b4da",
